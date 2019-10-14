@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using UrlShortener.BusinessLogic;
 using UrlShortener.Models;
 
 namespace UrlShortener.Controllers
@@ -25,5 +26,19 @@ namespace UrlShortener.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(UrlViewModel model)
+        {
+            var viewModel = Service.Save(model);
+            return View("UrlInfo", viewModel);
+        }
+
+
     }
 }
