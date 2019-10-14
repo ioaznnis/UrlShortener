@@ -56,6 +56,11 @@ namespace UrlShortener
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
+                    name: "NavigateTo",
+                    template: "{Url}",
+                    defaults: new {controller="Home", action="NavigateTo"});
+
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });

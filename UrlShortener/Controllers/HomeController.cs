@@ -36,9 +36,16 @@ namespace UrlShortener.Controllers
         public IActionResult Create(UrlViewModel model)
         {
             var viewModel = Service.Save(model);
+
+            var formattableString = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/";
+            viewModel.ShortUrl = formattableString + viewModel.ShortUrl;
             return View("UrlInfo", viewModel);
         }
 
+        public IActionResult NavigateTo(string url)
+        {
+            return Redirect(Service.GetRedirectUrl(url));
+        }
 
     }
 }

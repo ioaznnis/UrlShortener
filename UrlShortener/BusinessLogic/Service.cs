@@ -9,7 +9,7 @@ namespace UrlShortener.BusinessLogic
     /// </summary>
     public static class Service
     {
-        public static Dictionary<string, UrlInfoViewModel> Dictionary { get; } =
+        public static Dictionary<string, UrlInfoViewModel> Data { get; } =
             new Dictionary<string, UrlInfoViewModel>();
 
         public static UrlInfoViewModel Save(UrlViewModel model)
@@ -21,7 +21,7 @@ namespace UrlShortener.BusinessLogic
                 ShortUrl = Encode(Guid.NewGuid())
             };
 
-            Dictionary.Add(info.ShortUrl, info);
+            Data.Add(info.ShortUrl, info);
             return info;
         }
 
@@ -53,6 +53,11 @@ namespace UrlShortener.BusinessLogic
                 .Replace("-", "+");
             var buffer = Convert.FromBase64String(value + "==");
             return new Guid(buffer);
+        }
+
+        public static string GetRedirectUrl(string url)
+        {
+            return Data[url].LongUrl;
         }
     }
 }
