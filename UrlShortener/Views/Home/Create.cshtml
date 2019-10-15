@@ -1,19 +1,17 @@
 ﻿@model UrlShortener.Models.UrlViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Создание короткой ссылки";
 }
 
-<h1>Create</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>UrlViewModel</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="LongUrl" class="control-label"></label>
+                <label asp-for="LongUrl" class="control-label">Введите URL:</label>
                 <input asp-for="LongUrl" class="form-control" />
                 <span asp-validation-for="LongUrl" class="text-danger"></span>
             </div>

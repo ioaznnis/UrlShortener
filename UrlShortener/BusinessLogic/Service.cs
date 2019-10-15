@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using UrlShortener.Models;
 
 namespace UrlShortener.BusinessLogic
@@ -9,20 +10,24 @@ namespace UrlShortener.BusinessLogic
     /// </summary>
     public static class Service
     {
-        public static Dictionary<string, UrlInfoViewModel> Data { get; } =
+        private static Dictionary<string, UrlInfoViewModel> Data { get; } =
             new Dictionary<string, UrlInfoViewModel>();
 
-        public static UrlInfoViewModel Save(UrlViewModel model)
+        public static string Create(UrlViewModel model, HttpRequest request)
         {
-            var info = new UrlInfoViewModel()
+            var id = Encode(Guid.NewGuid());
+
+            var info = new UrlInfoViewModel
             {
+                Id = id,
                 Created = DateTime.Now,
                 LongUrl = model.LongUrl,
-                ShortUrl = Encode(Guid.NewGuid())
+                ShortUrl = $"{request.Scheme}://{request.Host}{request.PathBase}/{id}",
             };
 
-            Data.Add(info.ShortUrl, info);
-            return info;
+            Data.Add(id, info);
+
+            return id;
         }
 
         /// <summary>
@@ -40,24 +45,24 @@ namespace UrlShortener.BusinessLogic
             return encoded.Substring(0, 22);
         }
 
-
-        /// <summary>
-        /// Decodes the given base64 string
-        /// </summary>
-        /// <param name="value">The base64 encoded string of a Guid</param>
-        /// <returns>A new Guid</returns>
-        public static Guid Decode(string value)
-        {
-            value = value
-                .Replace("_", "/")
-                .Replace("-", "+");
-            var buffer = Convert.FromBase64String(value + "==");
-            return new Guid(buffer);
-        }
-
-        public static string GetRedirectUrl(string url)
+        public static string Redirect(string url)
         {
             return Data[url].LongUrl;
+        }
+
+        public static UrlInfoViewModel Get(string id)
+        {
+            return Data[id];
+        }
+
+        public static IEnumerable<UrlInfoViewModel> GetAll()
+        {
+            return Data.Values;
+        }
+
+        public static void Delete(string id)
+        {
+            Data.Remove(id);
         }
     }
 }
