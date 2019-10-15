@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using UrlShortener.BusinessLogic;
 
 namespace UrlShortener.Controllers
@@ -13,6 +14,6 @@ namespace UrlShortener.Controllers
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public IActionResult NavigateTo(string url) => Redirect(Service.Redirect(url));
+        public async Task<IActionResult> NavigateTo(string url) => Redirect(await Service.Redirect(url));
     }
 }

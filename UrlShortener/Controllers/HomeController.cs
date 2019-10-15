@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using UrlShortener.BusinessLogic;
 using UrlShortener.Models;
@@ -10,9 +11,9 @@ namespace UrlShortener.Controllers
     /// </summary>
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var collection = Service.GetAll();
+            var collection = await Service.GetAll();
             return View(collection);
         }
 
@@ -34,9 +35,9 @@ namespace UrlShortener.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult Create(UrlViewModel model)
+        public async Task<IActionResult> Create(UrlViewModel model)
         {
-            var id = Service.Create(model, this.Request);
+            var id = await Service.Create(model);
             return RedirectToAction(nameof(Details), new {id = id});
         }
 
@@ -45,9 +46,9 @@ namespace UrlShortener.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult Details(string id)
+        public async Task<IActionResult> Details(string id)
         {
-            var viewModel = Service.Get(id);
+            var viewModel = await Service.Get(id);
             return View(viewModel);
         }
 
@@ -56,9 +57,9 @@ namespace UrlShortener.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            Service.Delete(id);
+            await Service.Delete(id);
             return RedirectToAction(nameof(Index));
         }
     }

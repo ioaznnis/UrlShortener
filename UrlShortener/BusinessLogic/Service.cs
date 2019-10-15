@@ -1,31 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using UrlShortener.Models;
 
 namespace UrlShortener.BusinessLogic
 {
     /// <summary>
-    /// 
+    /// Основная бизнес-логика сервиса
     /// </summary>
+    //todo: Добавить использование CancellationToken
     public static class Service
     {
-        private static Dictionary<string, UrlInfoViewModel> Data { get; } =
-            new Dictionary<string, UrlInfoViewModel>();
-
-        public static string Create(UrlViewModel model, HttpRequest request)
+        public static async Task<string> Create(UrlViewModel model)
         {
             var id = Encode(Guid.NewGuid());
 
-            var info = new UrlInfoViewModel
+            using (var db = new ApplicationContext())
             {
-                Id = id,
-                Created = DateTime.Now,
-                LongUrl = model.LongUrl,
-                ShortUrl = $"{request.Scheme}://{request.Host}{request.PathBase}/{id}",
-            };
-
-            Data.Add(id, info);
+                await db.Urls.AddAsync(
+                    new UrlInfoViewModel
+                    {
+                        Id = id,
+                        Created = DateTime.Now,
+                        LongUrl = model.LongUrl,
+                    });
+                await db.SaveChangesAsync();
+            }
 
             return id;
         }
@@ -45,24 +46,36 @@ namespace UrlShortener.BusinessLogic
             return encoded.Substring(0, 22);
         }
 
-        public static string Redirect(string url)
+        public static async Task<string> Redirect(string url)
         {
-            return Data[url].LongUrl;
+            return (await Get(url)).LongUrl;
         }
 
-        public static UrlInfoViewModel Get(string id)
+        public static async Task<UrlInfoViewModel> Get(string id)
         {
-            return Data[id];
+            using (var db = new ApplicationContext())
+            {
+                //todo: заменить на SingleOrDefaultAsync c обработкой ошибок
+                return await db.Urls.SingleAsync(x => x.Id == id);
+            }
         }
 
-        public static IEnumerable<UrlInfoViewModel> GetAll()
+        public static async Task<IReadOnlyCollection<UrlInfoViewModel>> GetAll()
         {
-            return Data.Values;
+            using (var db = new ApplicationContext())
+            {
+                return await db.Urls.ToListAsync();
+            }
         }
 
-        public static void Delete(string id)
+        public static async Task Delete(string id)
         {
-            Data.Remove(id);
+            using (var db = new ApplicationContext())
+            {
+                var item = await db.Urls.SingleAsync(x => x.Id == id);
+                db.Urls.Remove(item);
+                await db.SaveChangesAsync();
+            }
         }
     }
 }

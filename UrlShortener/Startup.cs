@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using UrlShortener.BusinessLogic;
 
 namespace UrlShortener
 {
@@ -18,6 +19,9 @@ namespace UrlShortener
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            ApplicationContext.UserId = Configuration["Database:UserID"];
+            ApplicationContext.Password = Configuration["Database:Password"];
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
