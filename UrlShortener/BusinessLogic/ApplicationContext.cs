@@ -9,7 +9,9 @@ namespace UrlShortener.BusinessLogic
         public static string UserId { private get; set; }
         public static string Password { private get; set; }
 
-        public DbSet<UrlInfoViewModel> Urls { get; set; }
+        public DbSet<UrlInfoModel> Urls { get; set; }
+        
+        public DbSet<RedirectModel> Redirects { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

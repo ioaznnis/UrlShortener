@@ -20,7 +20,7 @@ namespace UrlShortener.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
         }
 
 
@@ -35,7 +35,7 @@ namespace UrlShortener.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(UrlViewModel model)
+        public async Task<IActionResult> Create(UrlModel model)
         {
             var id = await Service.Create(model);
             return RedirectToAction(nameof(Details), new {id = id});

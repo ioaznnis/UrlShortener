@@ -13,8 +13,7 @@
 1. Хранение данных организовано в базе данных MySQL;
 1. Сокращенные URL не располагаются по порядку.
 
-## Осталось реализовать:
-1. Подсчет переходов по ссылке
+Осталось реализовать:
 1. Возможность редактирования URL
 
 ## ToDo List
@@ -25,4 +24,3 @@
 * "Database:UserID"
 * "Database:Password"
 
-https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets

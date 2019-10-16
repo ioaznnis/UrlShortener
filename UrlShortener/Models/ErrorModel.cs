@@ -2,7 +2,7 @@ using System;
 
 namespace UrlShortener.Models
 {
-    public class ErrorViewModel
+    public class ErrorModel
     {
         public string RequestId { get; set; }
 

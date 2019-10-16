@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using UrlShortener.Models;
@@ -12,16 +13,16 @@ namespace UrlShortener.BusinessLogic
     //todo: Добавить использование CancellationToken
     public static class Service
     {
-        public static async Task<string> Create(UrlViewModel model)
+        public static async Task<string> Create(UrlModel model)
         {
             var id = Encode(Guid.NewGuid());
 
             using (var db = new ApplicationContext())
             {
                 await db.Urls.AddAsync(
-                    new UrlInfoViewModel
+                    new UrlInfoModel
                     {
-                        Id = id,
+                        UrlInfoModelId = id,
                         Created = DateTime.Now,
                         LongUrl = model.LongUrl,
                     });
@@ -48,23 +49,29 @@ namespace UrlShortener.BusinessLogic
 
         public static async Task<string> Redirect(string url)
         {
-            return (await Get(url)).LongUrl;
+            using (var db = new ApplicationContext())
+            {
+                db.Redirects.Add(new RedirectModel() {RedirectDate = DateTime.Now, UrlInfoModelId = url});
+                await db.SaveChangesAsync();
+
+                return (await db.Urls.SingleAsync(x => x.UrlInfoModelId == url)).LongUrl;
+            }
         }
 
-        public static async Task<UrlInfoViewModel> Get(string id)
+        public static async Task<UrlInfoModel> Get(string id)
         {
             using (var db = new ApplicationContext())
             {
                 //todo: заменить на SingleOrDefaultAsync c обработкой ошибок
-                return await db.Urls.SingleAsync(x => x.Id == id);
+                return await db.Urls.SingleAsync(x => x.UrlInfoModelId == id);
             }
         }
 
-        public static async Task<IReadOnlyCollection<UrlInfoViewModel>> GetAll()
+        public static async Task<IReadOnlyCollection<IndexModel>> GetAll()
         {
             using (var db = new ApplicationContext())
             {
-                return await db.Urls.ToListAsync();
+                return await db.Urls.Select(x => new IndexModel(x, x.Redirects.Count())).ToListAsync();
             }
         }
 
@@ -72,7 +79,7 @@ namespace UrlShortener.BusinessLogic
         {
             using (var db = new ApplicationContext())
             {
-                var item = await db.Urls.SingleAsync(x => x.Id == id);
+                var item = await db.Urls.SingleAsync(x => x.UrlInfoModelId == id);
                 db.Urls.Remove(item);
                 await db.SaveChangesAsync();
             }

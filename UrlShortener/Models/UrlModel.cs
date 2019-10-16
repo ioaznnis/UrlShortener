@@ -5,7 +5,7 @@ namespace UrlShortener.Models
     /// <summary>
     /// Модель для создаваемой короткой ссылки
     /// </summary>
-    public class UrlViewModel
+    public class UrlModel
     {
         //todo: Проверка на корректность сокращаемого URL 
         [Display(ShortName = "Исходный URL")]
